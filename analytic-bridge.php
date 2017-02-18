@@ -154,11 +154,11 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 					get_option('analyticbridge_setting_account_profile_id'),
 					$start,
 					$start,
-					"ga:sessions,ga:pageviews,ga:exits,ga:bounceRate,ga:avgSessionDuration,ga:avgTimeOnPage",
+					"ga:pageviews,ga:avgTimeOnPage",
 					array(
 					  "dimensions" => "ga:pagePath",
 					  'max-results' => '1000',
-					  'sort' => '-ga:sessions'
+					  'sort' => '-ga:pageviews'
 					)
 	); // $ids, $startDate, $endDate, $metrics, $optParams
 
@@ -239,12 +239,8 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 				// The time that the query happened (± a few seconds).
 				$qTime = new DateTime('now',new DateTimeZone($gaTimezone));
 
-				// $r[1] - ga:sessions
-				// $r[2] - ga:pageviews
-				// $r[3] - ga:exits
-				// $r[4] - ga:bounceRate
-				// $r[5] - ga:avgSessionDuration
-				// $r[6] - ga:avgTimeOnPage
+				// $r[1] - ga:pageviews
+				// $r[2] - ga:avgTimeOnPage
 
 				// Insert ga:pageviews
 				$metricsql .= $wpdb->prepare(
@@ -255,9 +251,33 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 							%s,
 							%s,
 							%s,
-							%s)
-						", $r[0], date_format($tstart, 'Y-m-d'), date_format($tend, 'Y-m-d'), date_format($qTime, 'Y-m-d H:i:s'), 'ga:pageviews', $r[2], $r[2]
+							%s) 
+						", 	$r[0], 
+						   	date_format($tstart, 'Y-m-d'), 
+						   	date_format($tend, 'Y-m-d'), 
+						   	date_format($qTime, 'Y-m-d H:i:s'), 
+						   	'ga:pageviews', 
+						   	$r[1]
 
+					);
+
+				$metricsql .= ", \n";
+
+				// Insert ga:pageviews
+				$metricsql .= $wpdb->prepare(
+
+						"(	(SELECT `id` from " . PAGES_TABLE . " WHERE `pagepath`=%s),
+							%s,
+							%s,
+							%s,
+							%s,
+							%s) 
+						", 	$r[0], 
+						   	date_format($tstart, 'Y-m-d'), 
+						   	date_format($tend, 'Y-m-d'), 
+						   	date_format($qTime, 'Y-m-d H:i:s'), 
+						   	'ga:avgTimeOnPage', 
+						   	$r[2]
 					);
 
 				if($iter->hasNext()) {
