@@ -111,6 +111,11 @@ function largo_anaylticbridge_cron($verbose = false) {
 	}
 
 	$analytics = new Analytic_Bridge_Service($client);
+	foreach ($queries as $query) {
+		query_and_save_analytics( $analytics, $query, $verbose );
+	}
+	
+	do_action("analytickit_cron_finished");
 
 	query_and_save_analytics( $analytics, "today", $verbose );
 	query_and_save_analytics( $analytics, "yesterday", $verbose );
