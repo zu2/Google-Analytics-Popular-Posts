@@ -89,7 +89,7 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 		$olul =  isset( $instance['olul'] ) ? $instance['olul'] : 'ul';
 
 		// Start the list
-		echo sprintf( '<%s class="count-%d">',
+		echo sprintf( '<%s class="count-%d gapp-ranking">',
 			$olul,
 			$instance['num_posts']
 		);
@@ -131,10 +131,10 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 
 				// wrap the items in li's.
 				$classes = join( ' ', get_post_class() );
-				$output .= '<li class="' . $classes . '">';
+				$output .= '<li class="' . $classes . ' gapp-ranking-list">';
 
 				// the headline
-				$output .= '<h5><a href="' . get_permalink() . '">' . get_the_title() . '</a></h5>';
+				$output .= '<a href="' . get_permalink() . '">' . get_the_title() . '</a>';
 
 				// close the item
 				$output .= '</li>';

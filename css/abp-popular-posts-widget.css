@@ -7,3 +7,50 @@
 .widget_analytic-bridge-popular-posts img.attachment-thumbnail {
   float: right;
 }
+/*
+ * Google Analytics Popular posts Ranking
+ */
+ol.gapp-ranking, ul.gapp-ranking {
+    counter-reset: pupular-ranking;
+    padding-left: 0;
+    list-style:none;
+}
+ 
+li.gapp-ranking-list {
+    position: relative;
+    font-size: 13px;
+	margin-left: 10px;
+    margin-bottom: 10px;/* 下の記事との間 */
+    border-bottom: 1px dotted #666;/* 区切り線の仕様（色と線種） */
+    padding-bottom: 5px;/* 区切り線と記事の間 */
+}
+ 
+li.gapp-ranking-list:nth-child(n+6):before {
+    background: #f3f3f3;
+    color: #777;
+}
+
+li.gapp-ranking-list:before {
+    background: none repeat scroll 0 0 #000;
+    color: #fff;
+    content: counter(pupular-ranking, decimal);
+    counter-increment: pupular-ranking;
+	font-family: "Times New Roman";
+    font-size: 120%;
+    left: 0;
+/*    top: 15px; */
+    line-height: 1;
+    padding: 4px 7px;
+    position: absolute;
+    z-index: 1;
+	opacity: .9;
+}
+
+li.gapp-ranking-list>a {/* 記事の文字部分 */
+    padding-left: 30px;/* ランキング数字との間 */
+    display: block;
+	font-weight: 700;
+	font-size: 1.4rem;
+	text-decoration: none;
+/*  color: black; */ /* フォントカラー */
+}

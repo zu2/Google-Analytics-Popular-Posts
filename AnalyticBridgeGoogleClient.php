@@ -95,10 +95,11 @@ class AnalyticBridge {
 
 			// Create a Google Client.
 
-			$config = new Google_Config();
-			$config->setCacheClass("Google_Cache_Null");
+//			$config = new Google_Config();
+//			$config->setCacheClass("Google_Cache_Null");
 
-			$client = new Google_Client($config);
+//			$client = new Google_Client($config);
+			$client = new Google_Client();
 			$client->setApplicationName("Analytic_Bridge");
 			$client->setClientId( analyticbridge_client_id() );
 			$client->setClientSecret( analyticbridge_client_secret() );
