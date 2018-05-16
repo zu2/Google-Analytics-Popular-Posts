@@ -91,6 +91,7 @@ function largo_pre_print($pre) {
 function largo_anaylticbridge_cron($verbose = false) {
 
 	global $wpdb;
+	$verbose = true;
 
 	$rustart = getrusage(); // track usage.
 
@@ -111,11 +112,6 @@ function largo_anaylticbridge_cron($verbose = false) {
 	}
 
 	$analytics = new Analytic_Bridge_Service($client);
-	foreach ($queries as $query) {
-		query_and_save_analytics( $analytics, $query, $verbose );
-	}
-	
-	do_action("analytickit_cron_finished");
 
 	query_and_save_analytics( $analytics, "today", $verbose );
 	query_and_save_analytics( $analytics, "yesterday", $verbose );
@@ -159,11 +155,11 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 					get_option('analyticbridge_setting_account_profile_id'),
 					$start,
 					$start,
-					"ga:pageviews,ga:avgTimeOnPage",
+					"ga:sessions,ga:pageviews,ga:exits,ga:bounceRate,ga:avgSessionDuration,ga:avgTimeOnPage",
 					array(
 					  "dimensions" => "ga:pagePath",
 					  'max-results' => '1000',
-					  'sort' => '-ga:pageviews'
+					  'sort' => '-ga:sessions'
 					)
 	); // $ids, $startDate, $endDate, $metrics, $optParams
 
@@ -244,8 +240,12 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 				// The time that the query happened (± a few seconds).
 				$qTime = new DateTime('now',new DateTimeZone($gaTimezone));
 
-				// $r[1] - ga:pageviews
-				// $r[2] - ga:avgTimeOnPage
+				// $r[1] - ga:sessions
+				// $r[2] - ga:pageviews
+				// $r[3] - ga:exits
+				// $r[4] - ga:bounceRate
+				// $r[5] - ga:avgSessionDuration
+				// $r[6] - ga:avgTimeOnPage
 
 				// Insert ga:pageviews
 				$metricsql .= $wpdb->prepare(
@@ -256,33 +256,9 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 							%s,
 							%s,
 							%s,
-							%s) 
-						", 	$r[0], 
-						   	date_format($tstart, 'Y-m-d'), 
-						   	date_format($tend, 'Y-m-d'), 
-						   	date_format($qTime, 'Y-m-d H:i:s'), 
-						   	'ga:pageviews', 
-						   	$r[1]
+							%s)
+						", $r[0], date_format($tstart, 'Y-m-d'), date_format($tend, 'Y-m-d'), date_format($qTime, 'Y-m-d H:i:s'), 'ga:pageviews', $r[2], $r[2]
 
-					);
-
-				$metricsql .= ", \n";
-
-				// Insert ga:pageviews
-				$metricsql .= $wpdb->prepare(
-
-						"(	(SELECT `id` from " . PAGES_TABLE . " WHERE `pagepath`=%s),
-							%s,
-							%s,
-							%s,
-							%s,
-							%s) 
-						", 	$r[0], 
-						   	date_format($tstart, 'Y-m-d'), 
-						   	date_format($tend, 'Y-m-d'), 
-						   	date_format($qTime, 'Y-m-d H:i:s'), 
-						   	'ga:avgTimeOnPage', 
-						   	$r[2]
 					);
 
 				if($iter->hasNext()) {
@@ -291,6 +267,8 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 				}
 			}
 		}
+		$pagesql   = rtrim($pagesql,", \n");   // what happen?
+		$metricsql = rtrim($metricsql,", \n");
 
 		// on duplicate key, don't do much.
 		$pagesql .= " ON DUPLICATE KEY UPDATE `id`=LAST_INSERT_ID(id)";
@@ -298,6 +276,10 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 		// on duplicate key update the value and querytime.
 		$metricsql .= " ON DUPLICATE KEY UPDATE `id`=LAST_INSERT_ID(id),`querytime`=values(querytime),`value`=values(value)";
 
+		if($verbose) echo("pagesql:\n");
+		if($verbose) echo("$pagesql\n");
+		if($verbose) echo("\nmetricsql:\n");
+		if($verbose) echo("$metricsql\n");
 		$wpdb->query( $pagesql );
 		$wpdb->query( $metricsql );
 

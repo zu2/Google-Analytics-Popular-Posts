@@ -75,21 +75,29 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 
 		extract( $args );
 
+		$key = "gapp-".md5(serialize($args) . serialize($instance));
+		$cache = get_transient($key);
+		if($cache !== false){
+			echo $cache;
+			return;
+		}
+
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Recent ' . $posts_term, 'largo') : $instance['title'], $instance, $this->id_base );
 
 		/*
 		 * Start drawing the widget
 		 */
-		echo $before_widget;
+		$cache = '';
+		$cache .= $before_widget;
 
 		if ( $title ) {
-			echo $before_title . $title . $after_title;
+			$cache .= $before_title . $title . $after_title;
 		}
 
 		$olul =  isset( $instance['olul'] ) ? $instance['olul'] : 'ul';
 
 		// Start the list
-		echo sprintf( '<%s class="count-%d gapp-ranking">',
+		$cache .= sprintf( '<%s class="count-%d gapp-ranking">',
 			$olul,
 			$instance['num_posts']
 		);
@@ -141,7 +149,7 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 			}
 
 			// print all of the items
-			echo $output;
+			$cache .= $output;
 
 		} else {
 			printf(
@@ -152,12 +160,14 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 
 		// close the ul if we're just showing a list of headlines
 		if ( $olul == 'ul' ) {
-			echo '</ul>';
+			$cache .= '</ul>';
 		} else {
-			echo '</ol>';
+			$cache .= '</ol>';
 		}
 
-		echo $after_widget;
+		$cache .= $after_widget;
+		echo $cache;
+		set_transient($key,$cache,HOUR_IN_SECONDS);
 
 		// Restore global $post
 		wp_reset_postdata();
