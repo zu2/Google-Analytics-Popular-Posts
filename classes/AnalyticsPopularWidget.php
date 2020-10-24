@@ -27,7 +27,6 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 		// widget actual processes
 		if( is_active_widget( false, false, $this->id_base )
 		&& !(get_option('analyticbridge_css_setting_disable_styles')==1)){
-
 			wp_enqueue_style( 'abp-popular-posts-widget', plugins_url( 'css/abp-popular-posts-widget.css', __DIR__ ), 'largo-stylesheet' );
 		}
 	}
@@ -77,29 +76,21 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 
 		extract( $args );
 
-		$key = "gapp-".md5(serialize($args) . serialize($instance));
-		$cache = get_transient($key);
-		if($cache !== false){
-			echo $cache;
-			return;
-		}
-
 		$title = apply_filters( 'widget_title', empty( $instance['title'] ) ? __( 'Recent ' . $posts_term, 'largo') : $instance['title'], $instance, $this->id_base );
 
 		/*
 		 * Start drawing the widget
 		 */
-		$cache = '';
-		$cache .= $before_widget;
+		echo $before_widget;
 
 		if ( $title ) {
-			$cache .= $before_title . $title . $after_title;
+			echo $before_title . $title . $after_title;
 		}
 
 		$olul =  isset( $instance['olul'] ) ? $instance['olul'] : 'ul';
 
 		// Start the list
-		$cache .= sprintf( '<%s class="count-%d gapp-ranking">',
+		echo sprintf( '<%s class="count-%d">',
 			$olul,
 			$instance['num_posts']
 		);
@@ -141,17 +132,17 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 
 				// wrap the items in li's.
 				$classes = join( ' ', get_post_class() );
-				$output .= '<li class="' . $classes . ' gapp-ranking-list">';
+				$output .= '<li class="' . $classes . '">';
 
 				// the headline
-				$output .= '<a href="' . get_permalink() . '">' . get_the_title() . '</a>';
+				$output .= '<h5><a href="' . get_permalink() . '">' . get_the_title() . '</a></h5>';
 
 				// close the item
 				$output .= '</li>';
 			}
 
 			// print all of the items
-			$cache .= $output;
+			echo $output;
 
 		} else {
 			printf(
@@ -162,14 +153,12 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 
 		// close the ul if we're just showing a list of headlines
 		if ( $olul == 'ul' ) {
-			$cache .= '</ul>';
+			echo '</ul>';
 		} else {
-			$cache .= '</ol>';
+			echo '</ol>';
 		}
 
-		$cache .= $after_widget;
-		echo $cache;
-		set_transient($key,$cache,HOUR_IN_SECONDS);
+		echo $after_widget;
 
 		// Restore global $post
 		wp_reset_postdata();
