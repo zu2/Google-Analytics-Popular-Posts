@@ -189,7 +189,9 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 		// caching iterator contains hasNext() functionality.
 		$iter = new CachingIterator(new ArrayIterator($report->rows));
 
+		$count = 0;
 		foreach ($iter as $r) {
+			$count++;
 			// $r[0] - pagePath
 			$gapath = $r[0];
 
@@ -225,6 +227,10 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 				//
 
 			} else {
+				if( $count > 1 ){
+					$pagesql .= ", \n";
+					$metricsql .= ", \n";
+				}
 
 				// Insert into our 'post' table the pagepath and related postid
 				// (if it doesn't exist).
@@ -261,10 +267,6 @@ function query_and_save_analytics($analytics, $startdate, $verbose=false) {
 
 					);
 
-				if($iter->hasNext()) {
-					$pagesql .= ", \n";
-					$metricsql .= ", \n";
-				}
 			}
 		}
 		$pagesql   = rtrim($pagesql,", \n");   // what happen?
