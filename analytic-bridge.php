@@ -22,8 +22,8 @@ define('METRICS_TABLE', $wpdb->prefix . "analyticbridge_metrics");
 define('PAGES_TABLE', $wpdb->prefix . "analyticbridge_pages");
 
 /** Include Google PHP client library. */
-require_once( plugin_dir_path( __FILE__ ) . 'api/vendor/autoload.php');
-require_once( plugin_dir_path( __FILE__ ) . 'api/src/Google/Client.php');
+require_once '/usr/share/php/Google/autoload.php';
+require_once '/usr/share/php/Google/Client.php';
 require_once( plugin_dir_path( __FILE__ ) . 'AnalyticBridgeGoogleClient.php');
 require_once( plugin_dir_path( __FILE__ ) . 'Analytic_Bridge_Service.php');
 
