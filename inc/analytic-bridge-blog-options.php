@@ -341,6 +341,27 @@ function analyticbridge_register_options() {
 	// Register our settings.
 	register_setting( 'analytic-bridge', 'analyticbridge_setting_popular_stats_days' );
 
+
+	/* ------------------------------------------------------------------------------------------
+	 * Section 4: Popular Post Widgets CSS settings
+	 * ---------------------------------------------------------------------------------------- */
+	// Add a section for our analytic-bridge page.
+	add_settings_section(
+		'largo_anaytic_bridge_css_settings_section',
+		'CSS Settings',
+		'largo_anaytic_bridge_css_setting_section_intro',
+		'analytic-bridge'
+	); // ($id, $title, $callback, $page)
+	// Add property field
+	add_settings_field(
+		'analyticbridge_css_setting_disable_styles',
+		'Disable styles (CSS)',
+		'analyticbridge_css_setting_disable_styles_input',
+		'analytic-bridge',
+		'largo_anaytic_bridge_css_settings_section'
+	); // ($id, $title, $callback, $page, $section, $args)
+	// Register our settings.
+	register_setting( 'analytic-bridge', 'analyticbridge_css_setting_disable_styles' );
 }
 add_action( 'admin_init', 'analyticbridge_register_options' );
 
@@ -375,6 +396,15 @@ function largo_anaytic_bridge_account_settings_section_intro() {
 function largo_anaytic_bridge_popular_posts_settings_section_intro() {
 	_e( '<p>The post halflife is a measure of how long more-popular posts should remain in the popular posts list.</p>', 'gapp' );
 	_e( '<p>For example, with a half-life setting of 14 days, a post that is two weeks old and has 200 views in the last 24 hours will be as valuable as a post that is 1 day old and has 100 views in the last 24 hours.</p>', 'gapp' );
+}
+
+/**
+ * Intro text for CSS settings
+ *
+ * @since v0.1
+ */
+function largo_anaytic_bridge_css_setting_section_intro() {
+	_e( '<p>disable CSS file output (css/abp-populart-posts-widget.css).</p>', 'gapp' );
 }
 
 /**
@@ -499,4 +529,10 @@ function analyticbridge_setting_popular_posts_halflife_input() {
  */
 function analyticbridge_setting_popular_stats_days_input() {
 	echo '<input name="analyticbridge_setting_popular_stats_days" id="analyticbridge_setting_popular_stats_days" type="number" value="' . get_option('analyticbridge_setting_popular_stats_days', 2 ) . '" class="regular-text" />';
+}
+/**
+ * Prints check box for disable CSS style files output.
+ */
+function analyticbridge_css_setting_disable_styles_input() {
+	echo '<input name="analyticbridge_css_setting_disable_styles" id="analyticbridge_setting_popular_posts_disable_styles" type="checkbox" value="1" '.checked(1,get_option('analyticbridge_css_setting_disable_styles'),false) .' class="regular-checkbox" />';
 }
