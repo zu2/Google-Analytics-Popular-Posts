@@ -25,7 +25,9 @@ class AnalyticBridgePopularPostWidget extends WP_Widget {
 			array( 'description' => __( 'List popular posts', 'largo' ), ) // Args
 		);
 		// widget actual processes
-		if( is_active_widget( false, false, $this->id_base ) ) {
+		if( is_active_widget( false, false, $this->id_base )
+		&& !(get_option('analyticbridge_css_setting_disable_styles')==1)){
+
 			wp_enqueue_style( 'abp-popular-posts-widget', plugins_url( 'css/abp-popular-posts-widget.css', __DIR__ ), 'largo-stylesheet' );
 		}
 	}
